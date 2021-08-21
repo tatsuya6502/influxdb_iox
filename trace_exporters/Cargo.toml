@@ -11,7 +11,7 @@ async-trait = "0.1"
 chrono = { version = "0.4" }
 futures = "0.3"
 observability_deps = { path = "../observability_deps" }
-opentelemetry = "0.15"
+opentelemetry = "0.16"
 opentelemetry-jaeger = { version = "0.14", optional = true }
 snafu = "0.6"
 structopt = { version = "0.3.21" }
