@@ -13,6 +13,7 @@ use std::{
 };
 pub use tempfile;
 
+pub mod time;
 pub mod tracing;
 
 pub type Error = Box<dyn std::error::Error + Send + Sync + 'static>;
@@ -27,6 +28,16 @@ pub fn approximately_equal(f1: f64, f2: f64) -> bool {
 
 pub fn all_approximately_equal(f1: &[f64], f2: &[f64]) -> bool {
     f1.len() == f2.len() && f1.iter().zip(f2).all(|(&a, &b)| approximately_equal(a, b))
+}
+
+pub trait ErrorTolerance<T: ?Sized> {
+    type Tolerance;
+
+    fn default_error_tolerance() -> Self::Tolerance;
+}
+
+pub trait AlmostEq<From: ErrorTolerance<Self>, Rhs: ?Sized = Self> {
+    fn almost_eq(&self, other: &Rhs, tolerance: From::Tolerance) -> bool;
 }
 
 /// Return a temporary directory that is deleted when the object is dropped
@@ -145,4 +156,19 @@ macro_rules! assert_not_contains {
             actual_value
         );
     };
+}
+
+#[macro_export]
+macro_rules! assert_almost_eq {
+    ($ACTUAL: expr, $EXPECTED: expr, $TOLERANCE: expr $(,)?) => ({
+        // use $crate::AlmostEq;
+        let (actual, expected, tolerance) = ($ACTUAL, $EXPECTED, $TOLERANCE);
+        assert!(
+            actual.almost_eq(&expected, tolerance),
+            "left is not almost equal to right:\n       left: {:?},\n      right: {:?},\n  tolerance: {:?}",
+            actual,
+            expected,
+            tolerance,
+        )
+    });
 }

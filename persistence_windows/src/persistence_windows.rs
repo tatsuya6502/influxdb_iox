@@ -567,26 +567,20 @@ mod tests {
         )
     }
 
-    // *NOTE*: this test currently fails on (at least) aarch64 architectures
-    // such as an Apple M1 machine.
-    //
-    // Possibly related to https://github.com/rust-lang/rust/issues/87906 but
-    // not clear at this point.
-    //
-    // Ignoring the tests here to get the suite green on aarch64.
-    #[cfg(not(target_arch = "aarch64"))]
     #[test]
     #[should_panic(expected = "PersistenceWindows::add_range called out of order")]
     fn panics_when_time_goes_backwards() {
         let mut w = make_windows(Duration::from_secs(60));
         let now = Instant::now();
+        let (tick_in_nanos, _is_truncated) =
+            test_helpers::time::system_native_tick_interval_in_nanos();
 
         w.add_range(
             Some(&Sequence { id: 1, number: 1 }),
             NonZeroUsize::new(1).unwrap(),
             Utc::now(),
             Utc::now(),
-            now + Duration::from_nanos(1),
+            now + Duration::from_nanos(tick_in_nanos),
         );
 
         w.add_range(
