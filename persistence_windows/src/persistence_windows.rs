@@ -1397,20 +1397,12 @@ mod tests {
         assert_eq!(w.closed[1].row_count.get(), 11);
     }
 
-    // *NOTE*: this test currently fails on (at least) aarch64 architectures
-    // such as an Apple M1 machine.
-    //
-    // Possibly related to https://github.com/rust-lang/rust/issues/87906 but
-    // not clear at this point.
-    //
-    // Ignoring the tests here to get the suite green on aarch64.
-    #[cfg(not(target_arch = "aarch64"))]
     #[test]
     fn test_summaries() {
         let late_arrival_period = Duration::from_secs(100);
         let mut w = make_windows(late_arrival_period);
         let instant = w.created_at;
-        let created_at_time = to_approximate_datetime(w.created_at);
+        let one_millis_duration = Duration::from_millis(1);
 
         // Window 1
         w.add_range(
@@ -1418,7 +1410,7 @@ mod tests {
             NonZeroUsize::new(11).unwrap(),
             Utc.timestamp_nanos(10),
             Utc.timestamp_nanos(11),
-            instant + Duration::from_millis(1),
+            instant + one_millis_duration,
         );
 
         w.add_range(
@@ -1443,7 +1435,7 @@ mod tests {
             NonZeroUsize::new(3).unwrap(),
             Utc.timestamp_nanos(89),
             Utc.timestamp_nanos(90),
-            instant + DEFAULT_CLOSED_WINDOW_PERIOD + Duration::from_millis(1),
+            instant + (DEFAULT_CLOSED_WINDOW_PERIOD + one_millis_duration),
         );
 
         // More than DEFAULT_CLOSED_WINDOW_PERIOD after start of Window 2 => Window 3
@@ -1455,7 +1447,14 @@ mod tests {
             instant + DEFAULT_CLOSED_WINDOW_PERIOD * 3,
         );
 
-        let closed_duration = chrono::Duration::from_std(DEFAULT_CLOSED_WINDOW_PERIOD).unwrap();
+        // Define a convenient closure to create chrono::DateTime used in WriteSummary.
+        let time_after = |dur| to_approximate_datetime(instant + dur);
+
+        // Create DateTimes.
+        let one_millis_after_creation = time_after(one_millis_duration);
+        let fifty_millis_after_creation = time_after(Duration::from_millis(50));
+        let after_first_close = time_after(DEFAULT_CLOSED_WINDOW_PERIOD + one_millis_duration);
+        let at_third_close = time_after(DEFAULT_CLOSED_WINDOW_PERIOD * 3);
 
         let summaries: Vec<_> = w.summaries().collect();
 
@@ -1464,26 +1463,22 @@ mod tests {
             summaries,
             vec![
                 WriteSummary {
-                    time_of_first_write: created_at_time + chrono::Duration::milliseconds(1),
-                    time_of_last_write: created_at_time + chrono::Duration::milliseconds(50),
+                    time_of_first_write: one_millis_after_creation,
+                    time_of_last_write: fifty_millis_after_creation,
                     min_timestamp: Utc.timestamp_nanos(1),
                     max_timestamp: Utc.timestamp_nanos(340),
                     row_count: 21
                 },
                 WriteSummary {
-                    time_of_first_write: created_at_time
-                        + closed_duration
-                        + chrono::Duration::milliseconds(1),
-                    time_of_last_write: created_at_time
-                        + closed_duration
-                        + chrono::Duration::milliseconds(1),
+                    time_of_first_write: after_first_close,
+                    time_of_last_write: after_first_close,
                     min_timestamp: Utc.timestamp_nanos(89),
                     max_timestamp: Utc.timestamp_nanos(90),
                     row_count: 3
                 },
                 WriteSummary {
-                    time_of_first_write: created_at_time + closed_duration * 3,
-                    time_of_last_write: created_at_time + closed_duration * 3,
+                    time_of_first_write: at_third_close,
+                    time_of_last_write: at_third_close,
                     min_timestamp: Utc.timestamp_nanos(3),
                     max_timestamp: Utc.timestamp_nanos(4),
                     row_count: 8
@@ -1501,17 +1496,15 @@ mod tests {
             summaries,
             vec![
                 WriteSummary {
-                    time_of_first_write: created_at_time + chrono::Duration::milliseconds(1),
-                    time_of_last_write: created_at_time
-                        + closed_duration
-                        + chrono::Duration::milliseconds(1),
+                    time_of_first_write: one_millis_after_creation,
+                    time_of_last_write: after_first_close,
                     min_timestamp: Utc.timestamp_nanos(1),
                     max_timestamp: Utc.timestamp_nanos(340),
                     row_count: 24
                 },
                 WriteSummary {
-                    time_of_first_write: created_at_time + closed_duration * 3,
-                    time_of_last_write: created_at_time + closed_duration * 3,
+                    time_of_first_write: at_third_close,
+                    time_of_last_write: at_third_close,
                     min_timestamp: Utc.timestamp_nanos(3),
                     max_timestamp: Utc.timestamp_nanos(4),
                     row_count: 8
