@@ -2208,7 +2208,7 @@ dependencies = [
  "dashmap",
  "hashbrown",
  "observability_deps",
- "opentelemetry",
+ "opentelemetry 0.15.0",
  "opentelemetry-prometheus",
  "parking_lot",
  "prometheus",
@@ -2664,6 +2664,23 @@ dependencies = [
 ]
 
 [[package]]
+name = "opentelemetry"
+version = "0.16.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "e1cf9b1c4e9a6c4de793c632496fa490bdc0e1eea73f0c91394f7b6990935d22"
+dependencies = [
+ "async-trait",
+ "crossbeam-channel",
+ "futures",
+ "js-sys",
+ "lazy_static",
+ "percent-encoding",
+ "pin-project 1.0.8",
+ "rand 0.8.4",
+ "thiserror",
+]
+
+[[package]]
 name = "opentelemetry-jaeger"
 version = "0.14.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -2671,7 +2688,7 @@ checksum = "09a9fc8192722e7daa0c56e59e2336b797122fb8598383dcb11c8852733b435c"
 dependencies = [
  "async-trait",
  "lazy_static",
- "opentelemetry",
+ "opentelemetry 0.15.0",
  "thiserror",
  "thrift",
  "tokio",
@@ -2686,7 +2703,7 @@ dependencies = [
  "async-trait",
  "futures",
  "http",
- "opentelemetry",
+ "opentelemetry 0.15.0",
  "prost 0.7.0",
  "thiserror",
  "tokio",
@@ -2700,7 +2717,7 @@ version = "0.8.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "e06ddda4790151e8b494f9bb32720fce23722d7f395f81383b9b2934bb6356a0"
 dependencies = [
- "opentelemetry",
+ "opentelemetry 0.15.0",
  "prometheus",
  "protobuf",
 ]
@@ -4922,7 +4939,7 @@ dependencies = [
  "chrono",
  "futures",
  "observability_deps",
- "opentelemetry",
+ "opentelemetry 0.15.0",
  "opentelemetry-jaeger",
  "snafu",
  "structopt",
@@ -4987,11 +5004,11 @@ dependencies = [
 
 [[package]]
 name = "tracing-opentelemetry"
-version = "0.14.0"
+version = "0.15.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "c47440f2979c4cd3138922840eec122e3c0ba2148bc290f756bd7fd60fc97fff"
+checksum = "599f388ecb26b28d9c1b2e4437ae019a7b336018b45ed911458cd9ebf91129f6"
 dependencies = [
- "opentelemetry",
+ "opentelemetry 0.16.0",
  "tracing",
  "tracing-core",
  "tracing-subscriber",
@@ -5056,7 +5073,7 @@ version = "0.1.0"
 dependencies = [
  "logfmt",
  "observability_deps",
- "opentelemetry",
+ "opentelemetry 0.15.0",
  "opentelemetry-jaeger",
  "opentelemetry-otlp",
  "regex",
