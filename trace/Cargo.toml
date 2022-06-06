@@ -9,7 +9,7 @@ description = "Distributed tracing support within IOx"
 
 chrono = "0.4"
 observability_deps = { path = "../observability_deps" }
-parking_lot = "0.11"
+parking_lot = "0.12"
 rand = "0.8"
 
 [dev-dependencies]
