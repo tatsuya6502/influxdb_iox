@@ -17,7 +17,7 @@ criterion = { version = "0.3.4", features = ["async_tokio"] }
 chrono = { version = "0.4", features = ["serde"] }
 datafusion = { path = "../datafusion" }
 data_types = { path = "../data_types" }
-flate2 = "1.0.20"
+flate2 = "1.0.25"
 influxdb_tsm = { path = "../influxdb_tsm" }
 influxdb_line_protocol = { path = "../influxdb_line_protocol" }
 mutable_buffer = { path = "../mutable_buffer" }
